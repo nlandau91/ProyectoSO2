@@ -7,11 +7,18 @@
 #include <string.h>
 
 int pipes[5][2];
-int pid;
+pid_t p[5];
 char *sg ="1";
 
 void fun_A(){
-
+    close(pipes[0][0]);
+    close(pipes[1][0]);
+    close(pipes[1][1]);
+    close(pipes[2][0]);
+    close(pipes[2][1]);
+    close(pipes[3][0]);
+    close(pipes[3][1]);
+    close(pipes[4][1]);
     while(1){
         char c[2];
         read(pipes[4][0],c,2);
@@ -22,7 +29,14 @@ void fun_A(){
 }
 
 void fun_B(){
-
+    close(pipes[0][1]);
+    close(pipes[1][0]);
+    close(pipes[2][0]);
+    close(pipes[2][1]);
+    close(pipes[3][0]);
+    close(pipes[3][1]);
+    close(pipes[4][0]);
+    close(pipes[4][1]);
     while(1){
         char c[2];
         read(pipes[0][0],c,2);
@@ -33,7 +47,14 @@ void fun_B(){
 }
 
 void fun_C(){
-
+    close(pipes[0][0]);
+    close(pipes[0][1]);
+    close(pipes[1][1]);
+    close(pipes[2][0]);
+    close(pipes[3][0]);
+    close(pipes[3][1]);
+    close(pipes[4][0]);
+    close(pipes[4][1]);
     while(1){
         char c[2];
         read(pipes[1][0],c,2);
@@ -44,7 +65,14 @@ void fun_C(){
 }
 
 void fun_D(){
-
+    close(pipes[0][0]);
+    close(pipes[0][1]);
+    close(pipes[1][0]);
+    close(pipes[1][1]);
+    close(pipes[2][1]);
+    close(pipes[3][0]);
+    close(pipes[4][0]);
+    close(pipes[4][1]);
     while(1){
         char c[2];
         read(pipes[2][0],c,2);
@@ -55,7 +83,14 @@ void fun_D(){
 }
 
 void fun_E(){
-
+    close(pipes[0][0]);
+    close(pipes[0][1]);
+    close(pipes[1][0]);
+    close(pipes[1][1]);
+    close(pipes[2][0]);
+    close(pipes[2][1]);
+    close(pipes[3][1]);
+    close(pipes[4][0]);
     while(1){
         char c[2];
         read(pipes[3][0],c,2);
@@ -77,59 +112,48 @@ void crearPipes(){
 }
 
 void crearProcesos(){
-
-    pid = fork();
-    if(pid<0){
-        printf("fork failed");
-        exit(1);
+    int i;
+    for(i=0;i<5;i++){
+        p[i] = fork();
+        if(p[i]<0){
+            printf("fork failed");
+            exit(1);
+        }
+        if(p[i]==0){
+            if(i==0){
+                fun_A();
+            }
+            if(i==1){
+                fun_B();
+            }
+            if(i==2){
+                fun_C();
+            }
+            if(i==3){
+                fun_D();
+            }
+            if(i==4){
+                fun_E();
+            }
+        }
     }
-    if(pid==0){
-        fun_A();
-    }
-
-    pid = fork();
-    if(pid<0){
-        printf("fork failed");
-        exit(1);
-    }
-    if(pid==0){
-        fun_B();
-    }
-
-    pid = fork();
-    if(pid<0){
-        printf("fork failed");
-        exit(1);
-    }
-    if(pid==0){
-        fun_C();
-    }
-
-    pid = fork();
-    if(pid<0){
-        printf("fork failed");
-        exit(1);
-    }
-    if(pid==0){
-        fun_D();
-    }
-
-    pid = fork();
-    if(pid<0){
-        printf("fork failed");
-        exit(1);
-    }
-    if(pid==0){
-        fun_E();
-    }
-
 }
 
 int main()
 {
     crearPipes();
     crearProcesos();
+    close(pipes[0][0]);
+    close(pipes[0][1]);
+    close(pipes[1][0]);
+    close(pipes[1][1]);
+    close(pipes[2][0]);
+    close(pipes[2][1]);
+    close(pipes[3][0]);
+    close(pipes[3][1]);
+    close(pipes[4][0]);
     write(pipes[4][1],sg,2);
+    close(pipes[4][1]);
     while(wait(NULL)){//espero a que terminen los procesos
         if (errno == ECHILD){
             break;
