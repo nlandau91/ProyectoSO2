@@ -6,7 +6,8 @@
 
 int t_pag[65536][2];
 int tlb[16][2];
-int memoria[256][8];
+int memoria[256][256];
+int ult;
 
 int buscar(int page, int offset){
 
@@ -19,6 +20,7 @@ int buscar(int page, int offset){
     }
     if(esta){//esta en el tlb, recupero el frame
         frame = tlb[i-1][1];
+        printf("[tlb]");
     }
     else{//si no esta en el tlb, busco en la tabla de paginas
         i=0;
@@ -26,15 +28,22 @@ int buscar(int page, int offset){
             esta=t_pag[i][0]==page;
             i++;
         }
-        if(esta){//esta en la tabla de paginas, recupero el frame
+        if(esta){//esta en la tabla de paginas, recupero el frame y agrego al tlb
             frame = t_pag[i-1][1];
+            tlb[ult][0]=page;
+            tlb[ult][1]=frame;
+            ult=(ult+1) % 16;
+            printf("[tabla]");
         }
         else{
+            //page fault
             return -1;
         }
     }
     return memoria[frame][offset];
 }
+
+
 
 void iniciar(){
     long int i;
@@ -48,7 +57,7 @@ void iniciar(){
     }
     for(i=0;i<256;i++){
         int j;
-        for(j=0;j<8;j++){
+        for(j=0;j<256;j++){
             memoria[i][j] = rand()%512;//cualquier tamano de dato
         }
     }
@@ -57,6 +66,7 @@ void iniciar(){
 int main()
 {
     iniciar();
+    ult = 0;
     FILE *fp = fopen("memoria.txt", "r");
     char buffer[16];
     char *ptr;
@@ -69,13 +79,13 @@ int main()
         }
         int page = address >> 8;
         int offset = address & 0xFF;
-        printf("Direccion: %x\nPagina : %x\nOffset : %x\n", address,page,offset);
+        printf("Direccion: %x, Pagina : %x, Offset : %x\n", address,page,offset);
             int data = buscar(page,offset);
             if(data == -1){
-                printf("no se encuentra la pagina para la direccion %x\n",address);
+                printf("no se encuentra la pagina para la direccion %x\n\n",address);
             }
             else{
-                printf("los datos en la direccion %x son %x\n",address,data);
+                printf("los datos en la direccion %x son %x\n\n",address,data);
             }
     }
 
