@@ -180,8 +180,8 @@ int main()
     close(pipe_e[0]);
     write(pipe_e[1],sg,2);//este write inicia la secuencia, luego cierro el pipe
     close(pipe_e[1]);
-    while(wait(NULL)){//espero a que terminen los procesos
-        if (errno == ECHILD){
+    while(waitpid(-1, NULL, 0)){
+        if(errno == ECHILD){
             break;
         }
     }
