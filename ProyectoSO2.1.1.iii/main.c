@@ -208,8 +208,8 @@ int main()
     write(pipe_ab[1],sg,2);
     close(pipe_a[1]);
     close(pipe_ab[1]);
-    while(wait(NULL)){//espero a que terminen los procesos
-        if (errno == ECHILD){
+    while(waitpid(-1, NULL, 0)){
+        if(errno == ECHILD){
             break;
         }
     }
