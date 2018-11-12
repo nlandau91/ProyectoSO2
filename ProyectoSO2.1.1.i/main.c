@@ -6,109 +6,133 @@
 #include <sys/wait.h>
 #include <string.h>
 
-int pipes[5][2];
+int pipe_a[2];
+int pipe_b[2];
+int pipe_c[2];
+int pipe_d[2];
+int pipe_e[2];
 pid_t p[5];
 char *sg ="1";
 
 void fun_A(){
-    close(pipes[0][0]);
-    close(pipes[1][0]);
-    close(pipes[1][1]);
-    close(pipes[2][0]);
-    close(pipes[2][1]);
-    close(pipes[3][0]);
-    close(pipes[3][1]);
-    close(pipes[4][1]);
+    //cierro los pipes que no voy a usar
+    close(pipe_a[0]);
+    close(pipe_b[0]);
+    close(pipe_b[1]);
+    close(pipe_c[0]);
+    close(pipe_c[1]);
+    close(pipe_d[0]);
+    close(pipe_d[1]);
+    close(pipe_e[1]);
     while(1){
         char c[2];
-        read(pipes[4][0],c,2);
+        read(pipe_e[0],c,2);//lectura bloqueante, hasta que recibo algo en el pipe, no avanzo
         printf("A");
         fflush(stdout);
-        write(pipes[0][1],sg,2);
+        write(pipe_a[1],sg,2);
     }
 }
 
 void fun_B(){
-    close(pipes[0][1]);
-    close(pipes[1][0]);
-    close(pipes[2][0]);
-    close(pipes[2][1]);
-    close(pipes[3][0]);
-    close(pipes[3][1]);
-    close(pipes[4][0]);
-    close(pipes[4][1]);
+    //cierro los pipes que no voy a usar
+    close(pipe_a[1]);
+    close(pipe_b[0]);
+    close(pipe_c[0]);
+    close(pipe_c[1]);
+    close(pipe_d[0]);
+    close(pipe_d[1]);
+    close(pipe_e[0]);
+    close(pipe_e[1]);
     while(1){
         char c[2];
-        read(pipes[0][0],c,2);
+        read(pipe_a[0],c,2);//lectura bloqueante, hasta que recibo algo en el pipe, no avanzo
         printf("B");
         fflush(stdout);
-        write(pipes[1][1],sg,2);
+        write(pipe_b[1],sg,2);
     }
 }
 
 void fun_C(){
-    close(pipes[0][0]);
-    close(pipes[0][1]);
-    close(pipes[1][1]);
-    close(pipes[2][0]);
-    close(pipes[3][0]);
-    close(pipes[3][1]);
-    close(pipes[4][0]);
-    close(pipes[4][1]);
+    //cierro los pipes que no voy a usar
+    close(pipe_a[0]);
+    close(pipe_a[1]);
+    close(pipe_b[1]);
+    close(pipe_c[0]);
+    close(pipe_d[0]);
+    close(pipe_d[1]);
+    close(pipe_e[0]);
+    close(pipe_e[1]);
     while(1){
         char c[2];
-        read(pipes[1][0],c,2);
+        read(pipe_b[0],c,2);//lectura bloqueante, hasta que recibo algo en el pipe, no avanzo
         printf("C");
         fflush(stdout);
-        write(pipes[2][1],"D",2);
+        write(pipe_c[1],"D",2);
     }
 }
 
 void fun_D(){
-    close(pipes[0][0]);
-    close(pipes[0][1]);
-    close(pipes[1][0]);
-    close(pipes[1][1]);
-    close(pipes[2][1]);
-    close(pipes[3][0]);
-    close(pipes[4][0]);
-    close(pipes[4][1]);
+    //cierro los pipes que no voy a usar
+    close(pipe_a[0]);
+    close(pipe_a[1]);
+    close(pipe_b[0]);
+    close(pipe_b[1]);
+    close(pipe_c[1]);
+    close(pipe_d[0]);
+    close(pipe_e[0]);
+    close(pipe_e[1]);
     while(1){
         char c[2];
-        read(pipes[2][0],c,2);
+        read(pipe_c[0],c,2);//lectura bloqueante, hasta que recibo algo en el pipe, no avanzo
         printf("D");
         fflush(stdout);
-        write(pipes[3][1],sg,2);
+        write(pipe_d[1],sg,2);
     }
 }
 
 void fun_E(){
-    close(pipes[0][0]);
-    close(pipes[0][1]);
-    close(pipes[1][0]);
-    close(pipes[1][1]);
-    close(pipes[2][0]);
-    close(pipes[2][1]);
-    close(pipes[3][1]);
-    close(pipes[4][0]);
+    //cierro los pipes que no voy a usar
+    close(pipe_a[0]);
+    close(pipe_a[1]);
+    close(pipe_b[0]);
+    close(pipe_b[1]);
+    close(pipe_c[0]);
+    close(pipe_c[1]);
+    close(pipe_d[1]);
+    close(pipe_e[0]);
     while(1){
         char c[2];
-        read(pipes[3][0],c,2);
-        printf("E");
+        read(pipe_d[0],c,2);//lectura bloqueante, hasta que recibo algo en el pipe, no avanzo
+        printf("E\n");//el salto de linea es para facilitar la lectura, la secuencia deberia ser de corrido
         fflush(stdout);
         sleep(1);
-        write(pipes[4][1],sg,2);
+        write(pipe_e[1],sg,2);
     }
 }
 
 void crearPipes(){
-    int i;
-    for(i=0;i<5;i++){
-        if(pipe(pipes[i])==-1){
-            perror("Error pipe");
-            exit(EXIT_FAILURE);
-        }
+    //creo los pipes
+    if(pipe(pipe_a)==-1){
+        perror("Error pipe");
+        exit(EXIT_FAILURE);
     }
+    if(pipe(pipe_b)==-1){
+        perror("Error pipe");
+        exit(EXIT_FAILURE);
+    }
+    if(pipe(pipe_c)==-1){
+        perror("Error pipe");
+        exit(EXIT_FAILURE);
+    }
+    if(pipe(pipe_d)==-1){
+        perror("Error pipe");
+        exit(EXIT_FAILURE);
+    }
+    if(pipe(pipe_e)==-1){
+        perror("Error pipe");
+        exit(EXIT_FAILURE);
+    }
+
 }
 
 void crearProcesos(){
@@ -117,7 +141,7 @@ void crearProcesos(){
         p[i] = fork();
         if(p[i]<0){
             printf("fork failed");
-            exit(1);
+            exit(EXIT_FAILURE);
         }
         if(p[i]==0){
             if(i==0){
@@ -141,26 +165,25 @@ void crearProcesos(){
 
 int main()
 {
+    printf("La secuencia es ABCDE...\n");
     crearPipes();
     crearProcesos();
-    close(pipes[0][0]);
-    close(pipes[0][1]);
-    close(pipes[1][0]);
-    close(pipes[1][1]);
-    close(pipes[2][0]);
-    close(pipes[2][1]);
-    close(pipes[3][0]);
-    close(pipes[3][1]);
-    close(pipes[4][0]);
-    write(pipes[4][1],sg,2);
-    close(pipes[4][1]);
+    //cierro los pipes que no voy a usar
+    close(pipe_a[0]);
+    close(pipe_a[1]);
+    close(pipe_b[0]);
+    close(pipe_b[1]);
+    close(pipe_c[0]);
+    close(pipe_c[1]);
+    close(pipe_d[0]);
+    close(pipe_d[1]);
+    close(pipe_e[0]);
+    write(pipe_e[1],sg,2);//este write inicia la secuencia, luego cierro el pipe
+    close(pipe_e[1]);
     while(wait(NULL)){//espero a que terminen los procesos
         if (errno == ECHILD){
             break;
         }
     }
-
-
-
     return 0;
 }
