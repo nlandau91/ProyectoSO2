@@ -3,14 +3,16 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <string.h>
 
-int t_pag[65536][2];
-int tlb[16][2];
-int memoria[256][256];
-int ult;
+int t_pag[65536][2];//tabla de paginas
+int tlb[16][2];//tlb
+int memoria[256][256];//memoria fisica
+int ult;//proxima ubicacion del tlb en la cual insertar
 
 int buscar(int page, int offset){
-
+    //dado un numero de pagina y un offset, retorna los datos en la memoria
+    //devuelve -1 en caso de que no se encuentre en memoria
     int esta=0;
     int i=0;
     int frame;
@@ -46,6 +48,7 @@ int buscar(int page, int offset){
 
 
 void iniciar(){
+    //inicio los arreglos con valores aleatorios
     long int i;
     for(i=0;i<16;i++){
         tlb[i][0] = rand()%256;//8 bits de pagina
@@ -68,18 +71,20 @@ int main()
     iniciar();
     ult = 0;
     FILE *fp = fopen("memoria.txt", "r");
-    char buffer[16];
+    char buffer[18];
     char *ptr;
     unsigned int address;
+    int cant = 0;
     while(fgets(buffer,18,fp)!=NULL){
-        address = strtol(buffer,&ptr,2);//base 2, puedo poner la que sea.
-        if(address > 65536){
-            printf("error rango de memoria\n");
-            exit(1);
-        }
-        int page = address >> 8;
-        int offset = address & 0xFF;
-        printf("Direccion: %x, Pagina : %x, Offset : %x\n", address,page,offset);
+        cant++;
+        printf("%d_",cant);
+        if(strlen(buffer)!=17){
+            printf("formato de memoria incorrecto\n\n");
+        }else{
+            address = strtol(buffer,&ptr,2);//base 2, puedo poner la que sea dependiendo de el archivo de entrada.
+            int page = address >> 8;
+            int offset = address & 0xFF;
+            printf("Direccion: %x, Pagina : %x, Offset : %x\n", address,page,offset);
             int data = buscar(page,offset);
             if(data == -1){
                 printf("no se encuentra la pagina para la direccion %x\n\n",address);
@@ -87,6 +92,7 @@ int main()
             else{
                 printf("los datos en la direccion %x son %x\n\n",address,data);
             }
+        }
     }
 
     while(wait(NULL)){//espero a que terminen los procesos
