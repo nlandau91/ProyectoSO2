@@ -1,5 +1,9 @@
-# ProyectoSO2
+# ProyectoSO2018 2
 
-$ gcc main.c -o <nombre>
-  
-$ ./ <nombre>
+Para compilar:
+
+$ gcc main.c -o nombre_archivo
+
+Para ejecutar:
+
+$ ./nombre_archivo
