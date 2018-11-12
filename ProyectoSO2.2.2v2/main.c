@@ -81,12 +81,6 @@ int main()
             }
         }
     }
-
-    while(wait(NULL)){//espero a que terminen los procesos
-        if (errno == ECHILD){
-            break;
-        }
-    }
     fclose(fp);
     return 0;
 }
