@@ -15,6 +15,7 @@ typedef struct estructura{
 } aux;
 
 void fun_A(int identificador){
+    //defino los tipos de mensaje que necesito recibir y enviar
     aux a;
     aux b;
     aux c;
@@ -24,22 +25,24 @@ void fun_A(int identificador){
     c.tipo=3;
     aob.tipo=6;
     while(1){
-        msgrcv (identificador,(struct msgbuf *)&a, TAM,1, 0);
-        msgrcv (identificador,(struct msgbuf *)&aob, TAM,6, 0);
+        sleep(1);
+        msgrcv (identificador,(struct msgbuf *)&a, TAM,1, 0);//espero a que llegue un mensaje de tipo a bloqueante, no avanzo hasta no recibir
+        msgrcv (identificador,(struct msgbuf *)&aob, TAM,6, 0);//espero a que llegue un mensaje de tipo aob bloqueante, no avanzo hasta no recibir
         printf("A");
         fflush(stdout);
-        msgsnd (identificador,(struct msgbuf *)&c, TAM,IPC_NOWAIT);
-        msgsnd (identificador,(struct msgbuf *)&b, TAM,IPC_NOWAIT);
-        msgrcv (identificador,(struct msgbuf *)&a, TAM,1, 0);
-        msgrcv (identificador,(struct msgbuf *)&aob, TAM,6, 0);
+        msgsnd (identificador,(struct msgbuf *)&c, TAM,IPC_NOWAIT);//envio un mensaje de tipo c
+        msgsnd (identificador,(struct msgbuf *)&b, TAM,IPC_NOWAIT);//envio un mensaje de tipo b
+        msgrcv (identificador,(struct msgbuf *)&a, TAM,1, 0);//espero a que llegue un mensaje de tipo a bloqueante, no avanzo hasta no recibir
+        msgrcv (identificador,(struct msgbuf *)&aob, TAM,6, 0);//espero a que llegue un mensaje de tipo aob bloqueante, no avanzo hasta no recibir
         printf("A");
         fflush(stdout);
-        msgsnd (identificador,(struct msgbuf *)&b, TAM,IPC_NOWAIT);
+        msgsnd (identificador,(struct msgbuf *)&b, TAM,IPC_NOWAIT);//envio un mensaje de tipo b
 
     }
 }
 
 void fun_B(int identificador){
+    //defino los tipos de mensaje que necesito recibir y enviar
     aux a;
     aux b;
     aux c;
@@ -49,61 +52,62 @@ void fun_B(int identificador){
     c.tipo=3;
     aob.tipo=6;
     while(1){
-        msgrcv (identificador,(struct msgbuf *)&b, TAM,2, 0);
-        msgrcv (identificador,(struct msgbuf *)&aob, TAM,6, 0);
+        msgrcv (identificador,(struct msgbuf *)&b, TAM,2, 0);//espero a que llegue un mensaje de tipo b bloqueante, no avanzo hasta no recibir
+        msgrcv (identificador,(struct msgbuf *)&aob, TAM,6, 0);//espero a que llegue un mensaje de tipo aob bloqueante, no avanzo hasta no recibir
         printf("B");
         fflush(stdout);
-        msgsnd (identificador,(struct msgbuf *)&c, TAM,IPC_NOWAIT);
-        msgsnd (identificador,(struct msgbuf *)&a, TAM,IPC_NOWAIT);
-        msgrcv (identificador,(struct msgbuf *)&b, TAM,2, 0);
+        msgsnd (identificador,(struct msgbuf *)&c, TAM,IPC_NOWAIT);//envio un mensaje de tipo c
+        msgsnd (identificador,(struct msgbuf *)&a, TAM,IPC_NOWAIT);//envio un mensaje de tipo a
+        msgrcv (identificador,(struct msgbuf *)&b, TAM,2, 0);//espero a que llegue un mensaje de tipo b bloqueante, no avanzo hasta no recibir
         printf("B");
         fflush(stdout);
-        msgsnd (identificador,(struct msgbuf *)&c, TAM,IPC_NOWAIT);
-        msgsnd (identificador,(struct msgbuf *)&a, TAM,IPC_NOWAIT);
+        msgsnd (identificador,(struct msgbuf *)&c, TAM,IPC_NOWAIT);//envio un mensaje de tipo c
+        msgsnd (identificador,(struct msgbuf *)&a, TAM,IPC_NOWAIT);//envio un mensaje de tipo a
 
     }
 }
 
 void fun_C(int identificador){
+    //defino los tipos de mensaje que necesito recibir y enviar
     aux c;
     aux d;
     c.tipo=3;
     d.tipo=4;
     while(1){
-        msgrcv (identificador,(struct msgbuf *)&c, TAM,3, 0);
+        msgrcv (identificador,(struct msgbuf *)&c, TAM,3, 0);//espero a que llegue un mensaje de tipo c bloqueante, no avanzo hasta no recibir
         printf("C");
         fflush(stdout);
-        msgsnd (identificador,(struct msgbuf *)&d, TAM,IPC_NOWAIT);
+        msgsnd (identificador,(struct msgbuf *)&d, TAM,IPC_NOWAIT);//envio un mensaje de tipo d
     }
 }
 
 void fun_D(int identificador){
+    //defino los tipos de mensaje que necesito recibir y enviar
     aux d;
     aux e;
     d.tipo=4;
     e.tipo=5;
     while(1){
-        msgrcv (identificador,(struct msgbuf *)&d, TAM,4, 0);
+        msgrcv (identificador,(struct msgbuf *)&d, TAM,4, 0);//espero a que llegue un mensaje de tipo d bloqueante, no avanzo hasta no recibir
         printf("D");
         fflush(stdout);
-        msgsnd (identificador,(struct msgbuf *)&e, TAM,IPC_NOWAIT);
+        msgsnd (identificador,(struct msgbuf *)&e, TAM,IPC_NOWAIT);//envio un mensaje de tipo e
     }
 }
 
 void fun_E(int identificador){
+    //defino los tipos de mensaje que necesito recibir y enviar
     aux aob;
     aux e;
     aob.tipo=6;
     e.tipo=5;
     while(1){
-        msgrcv (identificador,(struct msgbuf *)&e, TAM,5, 0);
-        printf("E");
+        msgrcv (identificador,(struct msgbuf *)&e, TAM,5, 0);//espero a que llegue un mensaje de tipo e bloqueante, no avanzo hasta no recibir
+        printf("E\n");//el salto de linea es para facilitar la lectura, la secuencia deberia ser de corrido
         fflush(stdout);
-        sleep(1);
-        msgsnd (identificador,(struct msgbuf *)&aob, TAM,IPC_NOWAIT);
+        msgsnd (identificador,(struct msgbuf *)&aob, TAM,IPC_NOWAIT);//envio un mensaje de tipo aob
     }
 }
-
 
 void crearProcesos(int identificador){
     int i;
@@ -133,22 +137,21 @@ void crearProcesos(int identificador){
     }
 }
 
-
 int main()
 {
-    aux a;
-    aux aob;
-    int identificador;
-
-   //Obtengo la clave;
-    key_t clave=ftok("/bin/ls",33);
+    //Obtengo la clave;
+    char path[200];
+    getcwd(path,200*sizeof(char));
+    key_t clave=ftok(path,33);
     //Veo si se produjo error.
     if(clave==(key_t)-1){
         printf("Error al obtener la clave.\n");
         exit(1);
     }
-
-    /**Debo crear, eliminar y volver a crear, pues pueden quedar mensajes anteriores.*/
+    //creo, elimino y vuelvo a crear la cola para vaciar mensajes anteriores
+    //esto no es necesario hacerlo desde aqui y se puede hacer desde la consola
+    //pero para facilitar las ejecuciones sucesivas se agrega en el programa
+    int identificador;
     //Creo
     identificador = msgget (clave, 0600| IPC_CREAT );
     //Elimino
@@ -160,22 +163,20 @@ int main()
         printf("Error al obtener el identificador.\n");
         exit(1);
     }
-
-    //Seteo los tipos.
+    //defino los tipos de mensaje que necesito recibir y enviar
+    aux a;
+    aux aob;
     a.tipo=1;
     aob.tipo=6;
-
-    //Mensaje inicial
+    //Mensaje inicial para comenzar la secuencia
     msgsnd (identificador,(struct msgbuf *)&a, TAM, IPC_NOWAIT);
     msgsnd (identificador,(struct msgbuf *)&aob, TAM, IPC_NOWAIT);
 
     crearProcesos(identificador);
-
-    while (waitpid(-1, NULL, 0)) {
-           if (errno == ECHILD) {
-              break;
-           }
+    while(waitpid(-1, NULL, 0)){
+        if(errno == ECHILD){
+            break;
+        }
     }
-
     return 0;
 }
