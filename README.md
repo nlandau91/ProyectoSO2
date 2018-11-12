@@ -2,4 +2,4 @@
 
 gcc main.c -o <nombre>
   
-./<nombre>
+./ <nombre>
