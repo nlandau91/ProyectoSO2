@@ -6,8 +6,8 @@
 #include <string.h>
 
 int t_pag[256];//tabla de paginas
-int tlb[16][2];//tlb
-int memoria[256][256];//memoria fisica
+int tlb[16][2];//tlb, 16 entradas que contienen un numero de pagina con su frame asociado
+int memoria[256][256];//memoria fisica, 256 frames y 8 bits de offset
 int ult;//proxima ubicacion del tlb en la cual insertar
 
 int buscar(int page, int offset){
@@ -24,7 +24,7 @@ int buscar(int page, int offset){
         frame = tlb[i-1][1];
         printf("[tlb]");
     }
-    else{//si no esta en el tlb, busco en la tabla de paginas
+    else{//si no esta en el tlb, busco en la tabla de pagina
             frame = t_pag[page];
             tlb[ult][0]=page;
             tlb[ult][1]=frame;
@@ -38,17 +38,16 @@ void iniciar(){
     //inicio los arreglos con valores aleatorios
     long int i;
     for(i=0;i<16;i++){
-        tlb[i][0] = rand()%256;//8 bits de pagina
-        tlb[i][1] = rand()%256;//8 bits de offset
+        tlb[i][0] = rand()%256;
+        tlb[i][1] = rand()%256;
     }
     for(i=0;i<256;i++){
-        t_pag[i] = rand()%256;
         t_pag[i] = rand()%256;
     }
     for(i=0;i<256;i++){
         int j;
         for(j=0;j<256;j++){
-            memoria[i][j] = rand()%512;//datos de 512
+            memoria[i][j] = rand()%8;
         }
     }
 }
