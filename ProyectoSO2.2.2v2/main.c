@@ -68,8 +68,8 @@ int main()
             printf("formato de memoria incorrecto\n\n");
         }else{
             address = strtol(buffer,&ptr,2);//base 2, puedo poner la que sea dependiendo de el archivo de entrada.
-            int page = address >> 8;
-            int offset = address & 0xFF;
+            int page = address >> 8;//el numero de pagina son los 8 bits mas significativos
+            int offset = address & 0xFF;//el offset son los 8 bits menos significativos
             printf("Direccion: %x, Pagina : %x, Offset : %x\n", address,page,offset);
             int data = buscar(page,offset);
             if(data == -1){
